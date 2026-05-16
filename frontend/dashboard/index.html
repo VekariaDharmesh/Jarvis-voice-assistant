@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis AI | Control</title>
+    <link rel="stylesheet" href="/dashboard_files/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- TOP HEADER -->
+        <header>
+            <div class="logo">Jarvis AI</div>
+            <div class="header-actions">
+                <i data-lucide="bell" size="20"></i>
+                <i data-lucide="settings" size="20"></i>
+                <i data-lucide="user" size="20"></i>
+            </div>
+        </header>
+
+        <!-- LEFT SIDEBAR -->
+        <aside id="left-sidebar">
+            <!-- ACTIVE CONTEXT -->
+            <section class="section-wrapper">
+                <div class="section-header">
+                    <i data-lucide="box" size="14" class="section-icon"></i>
+                    <span class="section-label">Active Context</span>
+                </div>
+                <div class="glass-card">
+                    <div class="context-content">
+                        <div class="context-info">
+                            <div class="hologram-avatar">
+                                <i data-lucide="box" size="24"></i>
+                            </div>
+                            <div class="title-group">
+                                <h3>Project JARVIS</h3>
+                                <p>AI Operating System</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SYSTEM METRICS -->
+            <section class="section-wrapper">
+                <div class="section-header">
+                    <i data-lucide="activity" size="14" class="section-icon"></i>
+                    <span class="section-label">System Metrics</span>
+                </div>
+                <div class="glass-card">
+                    <div class="metrics-group">
+                        <div class="metric-item">
+                            <div class="metric-top">
+                                <div class="metric-label">
+                                    <i data-lucide="cpu" size="16"></i>
+                                    <span>CPU Usage</span>
+                                </div>
+                                <span id="cpu-value" class="metric-value">0%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div id="cpu-bar" class="progress-fill"></div>
+                            </div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-top">
+                                <div class="metric-label">
+                                    <i data-lucide="hard-drive" size="16"></i>
+                                    <span>Memory</span>
+                                </div>
+                                <span id="mem-value" class="metric-value">0%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div id="mem-bar" class="progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- MAIN WORKSPACE -->
+        <main id="workspace">
+            <section class="hero-section">
+                <h2 id="greeting-text">Good Morning, Dharmesh.</h2>
+                <p>What are we building today?</p>
+                
+                <!-- COMMAND BAR (Moved here) -->
+                <div class="command-bar-container">
+                    <div id="command-input-wrapper">
+                        <i data-lucide="command" size="20" style="color: var(--text-secondary);"></i>
+                        <input type="text" id="user-input" placeholder="Ask Jarvis anything..." autocomplete="off">
+                        <div class="input-actions">
+                            <button id="live-btn" class="icon-btn" title="Live Voice Mode">
+                                <i data-lucide="radio" size="22"></i>
+                            </button>
+                            <button id="mic-btn" class="icon-btn" title="Voice Command">
+                                <i data-lucide="mic" size="22"></i>
+                            </button>
+                            <button id="send-btn" class="icon-btn" title="Send Command">
+                                <i data-lucide="corner-down-left" size="22"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div id="chat-log">
+                <!-- Interactions appear here -->
+            </div>
+        </main>
+
+
+    </div>
+
+    <script src="/dashboard_files/app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
