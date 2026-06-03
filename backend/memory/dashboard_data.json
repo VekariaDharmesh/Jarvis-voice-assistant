@@ -1,0 +1,285 @@
+{
+    "projects": [
+        {
+            "id": "jarvis-voice-assistant",
+            "name": "Jarvis Voice Assistant",
+            "lastUpdated": "12 hours ago",
+            "status": "In Progress",
+            "techStack": [
+                "Python",
+                "FastAPI",
+                "Ollama",
+                "Whisper STT",
+                "Browser TTS"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "completed",
+                "Database": "in_progress",
+                "Authentication": "pending",
+                "Deployment": "pending"
+            }
+        },
+        {
+            "id": "ai-spyware-detection",
+            "name": "AI Spyware Detection System",
+            "lastUpdated": "Yesterday",
+            "status": "Completed",
+            "techStack": [
+                "Python",
+                "Machine Learning",
+                "Scikit-learn",
+                "Flask"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "completed",
+                "Database": "completed",
+                "Authentication": "completed",
+                "Deployment": "completed"
+            }
+        },
+        {
+            "id": "cloudsphere",
+            "name": "CloudSphere",
+            "lastUpdated": "Yesterday",
+            "status": "In Progress",
+            "techStack": [
+                "TypeScript",
+                "Next.js 15",
+                "Recharts",
+                "Tailwind CSS"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "completed",
+                "Database": "in_progress",
+                "Authentication": "pending",
+                "Deployment": "completed"
+            }
+        },
+        {
+            "id": "scholar-webapplication",
+            "name": "Scholar Web Application",
+            "lastUpdated": "4 days ago",
+            "status": "In Progress",
+            "techStack": [
+                "TypeScript",
+                "React",
+                "Python",
+                "FastAPI",
+                "BeautifulSoup"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "in_progress",
+                "Database": "in_progress",
+                "Authentication": "pending",
+                "Deployment": "pending"
+            }
+        },
+        {
+            "id": "cloud-cost-tracker",
+            "name": "Cloud Cost Tracker",
+            "lastUpdated": "1 week ago",
+            "status": "In Progress",
+            "techStack": [
+                "TypeScript",
+                "Next.js",
+                "Tailwind CSS v4",
+                "FastAPI",
+                "Recharts"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "in_progress",
+                "Database": "in_progress",
+                "Authentication": "pending",
+                "Deployment": "completed"
+            }
+        },
+        {
+            "id": "vekariadharmesh",
+            "name": "VekariaDharmesh",
+            "lastUpdated": "1 week ago",
+            "status": "Completed",
+            "techStack": [
+                "Markdown",
+                "GitHub Profile",
+                "Developer Docs"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "completed",
+                "Database": "completed",
+                "Authentication": "completed",
+                "Deployment": "completed"
+            }
+        },
+        {
+            "id": "ai-study-assistant",
+            "name": "AI Study Assistant",
+            "lastUpdated": "1 week ago",
+            "status": "In Progress",
+            "techStack": [
+                "TypeScript",
+                "Next.js",
+                "Tailwind CSS",
+                "Notion AI",
+                "Web Audio API"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "in_progress",
+                "Database": "completed",
+                "Authentication": "in_progress",
+                "Deployment": "completed"
+            }
+        },
+        {
+            "id": "vekariadharmesh-personal-portfolio",
+            "name": "Personal Portfolio Website",
+            "lastUpdated": "2 weeks ago",
+            "status": "Completed",
+            "techStack": [
+                "TypeScript",
+                "React",
+                "CSS Modules",
+                "Vite",
+                "Framer Motion"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "completed",
+                "Database": "completed",
+                "Authentication": "completed",
+                "Deployment": "completed"
+            }
+        },
+        {
+            "id": "multi-agent-orchestrator",
+            "name": "Multi-Agent Orchestrator",
+            "lastUpdated": "3 weeks ago",
+            "status": "Completed",
+            "techStack": [
+                "TypeScript",
+                "Node.js",
+                "Swarm Intelligence",
+                "Claude API"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "completed",
+                "Database": "completed",
+                "Authentication": "completed",
+                "Deployment": "completed"
+            }
+        },
+        {
+            "id": "stealth-browser-agent",
+            "name": "Stealth Browser Agent",
+            "lastUpdated": "3 weeks ago",
+            "status": "In Progress",
+            "techStack": [
+                "Go",
+                "Puppeteer",
+                "Stealth Injection",
+                "WebSockets"
+            ],
+            "progress": {
+                "Frontend": "in_progress",
+                "Backend": "completed",
+                "Database": "completed",
+                "Authentication": "pending",
+                "Deployment": "pending"
+            }
+        },
+        {
+            "id": "railway-rakshak",
+            "name": "Railway Rakshak Safety System",
+            "lastUpdated": "4 weeks ago",
+            "status": "Completed",
+            "techStack": [
+                "HTML",
+                "CSS",
+                "JavaScript",
+                "Mapbox API"
+            ],
+            "progress": {
+                "Frontend": "completed",
+                "Backend": "completed",
+                "Database": "completed",
+                "Authentication": "completed",
+                "Deployment": "completed"
+            }
+        }
+    ],
+    "tasks": [
+        {
+            "id": "task-101",
+            "title": "Configure llama3.2 context caching layer",
+            "status": "in_progress"
+        },
+        {
+            "id": "task-102",
+            "title": "Design PostgreSQL multi-tenant schema with Row-Level Security",
+            "status": "in_progress"
+        },
+        {
+            "id": "task-103",
+            "title": "Build Whisper audio downsampling middleware",
+            "status": "completed"
+        },
+        {
+            "id": "task-104",
+            "title": "Optimize Docker production container image layer caching",
+            "status": "completed"
+        },
+        {
+            "id": "task-105",
+            "title": "Set up Tailwind glassmorphic components and global variables",
+            "status": "completed"
+        },
+        {
+            "id": "task-106",
+            "title": "Implement secure JWT refresh token rotation",
+            "status": "pending"
+        },
+        {
+            "id": "task-107",
+            "title": "Deploy chroma vector database on persistent local storage",
+            "status": "pending"
+        },
+        {
+            "id": "task-108",
+            "title": "Benchmark Ollama token-generation throughput and compute bounds",
+            "status": "pending"
+        },
+        {
+            "id": "task-201",
+            "title": "Configure Docker Compose orchestrating FastAPI, frontend assets, and local Ollama daemon",
+            "status": "pending"
+        },
+        {
+            "id": "task-202",
+            "title": "Build semantic memory search cache using local Chroma vector index and Ollama embeddings",
+            "status": "in_progress"
+        },
+        {
+            "id": "task-203",
+            "title": "Implement API key token validation middleware on all local FastAPI API endpoints",
+            "status": "pending"
+        },
+        {
+            "id": "task-204",
+            "title": "Add audio preprocessing bandpass filter to remove background mic noise before STT transcription",
+            "status": "pending"
+        },
+        {
+            "id": "task-205",
+            "title": "Create automatic shell script backing up SQLite database and dashboard JSON nightly to a zip archive",
+            "status": "completed"
+        }
+    ],
+    "notes": "### ScholarWeb Goals\n- Redesign dashboard front-end\n- Set up PostgreSQL schema\n- Connect auth logic\n\n### Jarvis AI OS Roadmap\n- [x] Restore premium web-based dashboard visual interface\n- [x] Configure browser voice Text-To-Speech (TTS)\n- [x] Configure browser voice Speech-To-Text (STT) voice command triggers\n- [ ] Deploy Chroma vector memory indices"
+}

@@ -3,125 +3,660 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis AI | Control</title>
-    <link rel="stylesheet" href="/dashboard_files/style.css">
+    <title>JARVIS | AI Operating System</title>
+    <link rel="stylesheet" href="./style.css?v=2.4.16">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 </head>
 <body>
-    <div id="app">
-        <!-- TOP HEADER -->
-        <header>
-            <div class="logo">Jarvis AI</div>
-            <div class="header-actions">
-                <i data-lucide="bell" size="20"></i>
-                <i data-lucide="settings" size="20"></i>
-                <i data-lucide="user" size="20"></i>
-            </div>
-        </header>
-
-        <!-- LEFT SIDEBAR -->
-        <aside id="left-sidebar">
-            <!-- ACTIVE CONTEXT -->
-            <section class="section-wrapper">
-                <div class="section-header">
-                    <i data-lucide="box" size="14" class="section-icon"></i>
-                    <span class="section-label">Active Context</span>
-                </div>
-                <div class="glass-card">
-                    <div class="context-content">
-                        <div class="context-info">
-                            <div class="hologram-avatar">
-                                <i data-lucide="box" size="24"></i>
-                            </div>
-                            <div class="title-group">
-                                <h3>Project JARVIS</h3>
-                                <p>AI Operating System</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SYSTEM METRICS -->
-            <section class="section-wrapper">
-                <div class="section-header">
-                    <i data-lucide="activity" size="14" class="section-icon"></i>
-                    <span class="section-label">System Metrics</span>
-                </div>
-                <div class="glass-card">
-                    <div class="metrics-group">
-                        <div class="metric-item">
-                            <div class="metric-top">
-                                <div class="metric-label">
-                                    <i data-lucide="cpu" size="16"></i>
-                                    <span>CPU Usage</span>
-                                </div>
-                                <span id="cpu-value" class="metric-value">0%</span>
-                            </div>
-                            <div class="progress-track">
-                                <div id="cpu-bar" class="progress-fill"></div>
-                            </div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-top">
-                                <div class="metric-label">
-                                    <i data-lucide="hard-drive" size="16"></i>
-                                    <span>Memory</span>
-                                </div>
-                                <span id="mem-value" class="metric-value">0%</span>
-                            </div>
-                            <div class="progress-track">
-                                <div id="mem-bar" class="progress-fill"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </aside>
-
-        <!-- MAIN WORKSPACE -->
-        <main id="workspace">
-            <section class="hero-section">
-                <h2 id="greeting-text">Good Morning, Dharmesh.</h2>
-                <p>What are we building today?</p>
-                
-                <!-- COMMAND BAR (Moved here) -->
-                <div class="command-bar-container">
-                    <div id="command-input-wrapper">
-                        <i data-lucide="command" size="20" style="color: var(--text-secondary);"></i>
-                        <input type="text" id="user-input" placeholder="Ask Jarvis anything..." autocomplete="off">
-                        <div class="input-actions">
-                            <button id="live-btn" class="icon-btn" title="Live Voice Mode">
-                                <i data-lucide="radio" size="22"></i>
-                            </button>
-                            <button id="mic-btn" class="icon-btn" title="Voice Command">
-                                <i data-lucide="mic" size="22"></i>
-                            </button>
-                            <button id="send-btn" class="icon-btn" title="Send Command">
-                                <i data-lucide="corner-down-left" size="22"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div id="chat-log">
-                <!-- Interactions appear here -->
-            </div>
-        </main>
-
-
+    <canvas id="jarvis-bg-canvas"></canvas>
+    <!-- Mobile Navigation Top Bar -->
+    <div id="mobile-top-nav">
+        <button id="mobile-menu-toggle" class="icon-action-btn">
+            <i data-lucide="menu" size="20"></i>
+        </button>
+        <span class="mobile-logo-text">JARVIS</span>
+        <div class="status-indicator">
+            <span class="status-dot online"></span>
+        </div>
     </div>
 
-    <script src="/dashboard_files/app.js"></script>
+    <div id="app">
+        <!-- SIDEBAR (280px) - Collapsible Navigation & Control Panel -->
+        <aside id="left-sidebar">
+            <div class="sidebar-top-wrapper">
+                <!-- TOP BRAND SECTION -->
+                <div class="sidebar-brand-section">
+                    <div class="brand-top-row">
+                        <div class="brand-title">
+                            <span class="logo-dot"></span>
+                            <span class="logo-text">JARVIS</span>
+                        </div>
+                        <button id="toggle-sidebar" class="sidebar-action-btn" title="Toggle Sidebar">
+                            <i data-lucide="chevrons-left" size="16"></i>
+                        </button>
+                    </div>
+                    <div class="brand-status-meta">
+                        <span class="system-status"><span class="status-indicator-dot online"></span>System Online</span>
+                        <span class="agents-status-count"><i data-lucide="cpu" size="12"></i>3 Active Agents</span>
+                    </div>
+                </div>
+                
+                <!-- NAVIGATION -->
+                <nav class="sidebar-nav">
+                    <a href="#" class="nav-item active" data-view="home">
+                        <i data-lucide="home" size="16"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="projects">
+                        <i data-lucide="folder" size="16"></i>
+                        <span>Projects</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="tasks">
+                        <i data-lucide="check-square" size="16"></i>
+                        <span>Tasks</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="agents">
+                        <i data-lucide="cpu" size="16"></i>
+                        <span>Agents</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="analytics">
+                        <i data-lucide="database" size="16"></i>
+                        <span>Memory</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="notes">
+                        <i data-lucide="file-text" size="16"></i>
+                        <span>Notes</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="settings">
+                        <i data-lucide="settings" size="16"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+
+                <!-- TODAY'S FOCUS CHECKLIST IN SIDEBAR -->
+                <div class="sidebar-section focus-sidebar-section">
+                    <div class="section-label">Today's Focus</div>
+                    <div class="focus-sidebar-card">
+                        <div class="card-header-sidebar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span class="focus-progress-badge" id="focus-progress-label" style="font-size:11px; color:var(--text-secondary);">0 / 4 Complete</span>
+                        </div>
+                        <div class="focus-progress-track" style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; margin-bottom:12px; overflow:hidden;">
+                            <div class="focus-progress-fill" id="focus-progress-bar" style="width: 0%; height:100%; background:var(--accent-purple); transition:width var(--transition-speed) ease;"></div>
+                        </div>
+                        <ul class="focus-checklist" id="sidebar-focus-list" style="margin-bottom:12px; max-height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; list-style:none; padding:0;">
+                            <!-- Dynamic Focus Items -->
+                        </ul>
+                        <div class="focus-add-wrapper" style="display:flex; gap:6px;">
+                            <input type="text" id="sidebar-focus-input" placeholder="Add priority..." autocomplete="off" style="flex:1; background:rgba(0,0,0,0.2); border:1px solid var(--border-color); border-radius:6px; height:28px; padding:0 8px; color:white; font-size:11px; outline:none;">
+                            <button id="sidebar-focus-add-btn" class="focus-add-btn" style="width:28px; height:28px; border-radius:6px; border:1px solid var(--border-color); background:rgba(255,255,255,0.05); color:white; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:all var(--transition-speed);">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- USER PROFILE AT BOTTOM -->
+            <div class="sidebar-profile-footer">
+                <div class="profile-details">
+                    <div class="avatar-box">D</div>
+                    <div class="user-meta">
+                        <span class="name">Dharmesh</span>
+                        <span class="role">Product Engineer</span>
+                    </div>
+                </div>
+                <button class="quick-settings-trigger" title="System Settings" id="sidebar-settings-btn">
+                    <i data-lucide="sliders" size="14"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTAINER -->
+        <div id="main-container">
+            <!-- TOP BAR -->
+            <header id="top-bar">
+                <div class="header-breadcrumb">
+                    <span id="breadcrumb-parent">JARVIS</span>
+                    <span class="breadcrumb-separator">/</span>
+                    <span id="breadcrumb-current" class="active">Home</span>
+                </div>
+                <div class="header-actions">
+                    <div class="status-indicator">
+                        <span class="status-dot online"></span>
+                        <span class="status-text">Ready</span>
+                    </div>
+                    <button class="icon-action-btn" id="shortcut-hint" title="Command Shortcut">
+                        <kbd>⌘K</kbd>
+                    </button>
+                </div>
+            </header>
+
+            <!-- VIEW CONTAINER -->
+            <div id="view-content">
+                
+                <!-- ==================== VIEW: HOME ==================== -->
+                <section id="view-home" class="view-section active">
+                    <div class="home-layout-container">
+                        <!-- Left/Center Main Column: Command and Chat -->
+                        <div class="home-main-column">
+                            <!-- Premium Header -->
+                            <div class="welcome-header">
+                                <h1 id="greeting-text">Welcome, Dharmesh</h1>
+                                <p class="greeting-subtitle">Continue building <span class="active-project-tag">ScholarWeb</span></p>
+                            </div>
+
+                            <!-- Command Bar Workspace -->
+                            <div class="ai-command-center">
+                                <div class="command-container">
+                                    <div class="command-bar-wrapper">
+                                        <i data-lucide="search" class="command-icon" size="18"></i>
+                                        <input type="text" id="user-input" placeholder="Ask Jarvis, create a task, generate code, or continue a project..." autocomplete="off">
+                                        <div class="command-bar-actions">
+                                            <button id="live-btn" class="command-action-btn" title="Continuous Voice Mode">
+                                                <i data-lucide="radio" size="14"></i>
+                                                <span>Live</span>
+                                            </button>
+                                            <button id="mic-btn" class="command-action-btn" title="Voice Input">
+                                                <i data-lucide="mic" size="14"></i>
+                                            </button>
+                                            <button id="stop-ai-btn" class="command-action-btn" title="Stop AI" style="display: none; color: var(--accent-red); margin-right: 4px;">
+                                                <i data-lucide="square" size="14"></i>
+                                                <span>Stop</span>
+                                            </button>
+                                            <button id="send-btn" class="command-action-btn primary" title="Execute (Enter)">
+                                                <i data-lucide="corner-down-left" size="14"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Example Quick Prompts -->
+                                <div class="command-examples">
+                                    <span class="example-tag" data-prompt="Generate a clean dashboard UI template using modern HTML and CSS flexbox.">Generate UI</span>
+                                    <span class="example-tag" data-prompt="Analyze the following code block for optimization, vulnerabilities, and code quality issues:">Review Code</span>
+                                    <span class="example-tag" data-prompt="Design an optimized relational schema with indexes for a multi-tenant database.">Create Database</span>
+                                    <span class="example-tag" data-prompt="Write a step-by-step production playbook for a React/FastAPI stack on Docker/Vercel.">Deploy Project</span>
+                                </div>
+
+                                <!-- Conversation Output -->
+                                <div class="chat-messages-box" id="chat-log">
+                                    <div class="message jarvis-message">
+                                        <div class="message-content">
+                                            <span style="color:var(--text-secondary); font-style:italic;">JARVIS is standing by. Ask a question, run a command, or trigger one of the clean SaaS action modules below.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Clean Quick Actions Grid -->
+                            <div class="quick-actions-section">
+                                <h3 class="section-title">Quick Actions</h3>
+                                <div class="quick-actions-grid">
+                                    <div class="action-card" data-prompt="Generate a clean dashboard UI template using HTML and vanilla CSS flexbox.">
+                                        <div class="action-icon-box"><i data-lucide="layout" size="14"></i></div>
+                                        <div class="action-info">
+                                            <h4>Generate UI</h4>
+                                        </div>
+                                    </div>
+                                    <div class="action-card" data-prompt="Create a highly secure, scalable FastAPI REST API endpoint with Pydantic validations.">
+                                        <div class="action-icon-box"><i data-lucide="server" size="14"></i></div>
+                                        <div class="action-info">
+                                            <h4>Create API</h4>
+                                        </div>
+                                    </div>
+                                    <div class="action-card" data-prompt="Review the active repository codebase and identify any bugs, vulnerabilities or syntax faults:">
+                                        <div class="action-icon-box"><i data-lucide="code" size="14"></i></div>
+                                        <div class="action-info">
+                                            <h4>Review Code</h4>
+                                        </div>
+                                    </div>
+                                    <div class="action-card" data-prompt="Analyze this stack trace error and suggest a robust structural debugging resolution:">
+                                        <div class="action-icon-box"><i data-lucide="bug" size="14"></i></div>
+                                        <div class="action-info">
+                                            <h4>Debug Error</h4>
+                                        </div>
+                                    </div>
+                                    <div class="action-card" data-prompt="Design an optimized relational database schema with performance indexing parameters for my project:">
+                                        <div class="action-icon-box"><i data-lucide="database" size="14"></i></div>
+                                        <div class="action-info">
+                                            <h4>Database Schema</h4>
+                                        </div>
+                                    </div>
+                                    <div class="action-card" data-prompt="Create a highly secure, optimized multi-stage production Dockerfile and Docker Compose configurations for:">
+                                        <div class="action-icon-box"><i data-lucide="layers" size="14"></i></div>
+                                        <div class="action-info">
+                                            <h4>Docker Setup</h4>
+                                        </div>
+                                    </div>
+                                    <div class="action-card" data-prompt="Write a clean Vercel serverless configurations, GitHub Actions production deployment pipeline, and config assets for:">
+                                        <div class="action-icon-box"><i data-lucide="rocket" size="14"></i></div>
+                                        <div class="action-info">
+                                            <h4>CI/CD Deploy</h4>
+                                        </div>
+                                    </div>
+                                    <div class="action-card" data-prompt="Generate a premium developer-focused markdown documentation README and API references detailing structural layout:">
+                                        <div class="action-icon-box"><i data-lucide="file-text" size="14"></i></div>
+                                        <div class="action-info">
+                                            <h4>Write Docs</h4>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+                <!-- ==================== VIEW: PROJECTS ==================== -->
+                <section id="view-projects" class="view-section">
+                    <div class="view-header">
+                        <div class="view-title-group">
+                            <h2>Projects</h2>
+                            <p>Explore, search, and manage your operational workspaces and GitHub repositories</p>
+                        </div>
+                        <button class="primary-btn" id="new-project-btn">+ Deploy New Mission</button>
+                    </div>
+                    <div class="missions-panels-container" id="all-projects-grid">
+                        <!-- Dynamic Mission Control Panels populated via app.js -->
+                    </div>
+                </section>
+
+                <!-- ==================== VIEW: AI AGENTS ==================== -->
+                <section id="view-agents" class="view-section">
+                    <div class="view-header">
+                        <div class="view-title-group">
+                            <h2>Specialized AI Agents</h2>
+                            <p>Instantly hot-swap specialized personalities configured with active focus scopes</p>
+                        </div>
+                        <button class="secondary-btn" id="restore-agent-default">Reset to Core Default</button>
+                    </div>
+                    <div class="agents-selection-grid" id="agents-selection-grid">
+                        <!-- Populated dynamically -->
+                    </div>
+                </section>
+
+                <!-- ==================== VIEW: NOTES ==================== -->
+                <section id="view-notes" class="view-section">
+                    <div class="view-header">
+                        <div class="view-title-group">
+                            <h2>Scratchpad</h2>
+                            <p>Minimalist dual-pane markdown notepad with auto-saved drafts</p>
+                        </div>
+                        <div class="notes-actions">
+                            <span id="notes-save-status" class="save-status-text">Draft Saved</span>
+                            <button class="primary-btn" id="save-notes-btn">Save Note</button>
+                        </div>
+                    </div>
+                    <div class="notes-container">
+                        <textarea id="notes-textarea" placeholder="Start typing your notes in markdown format..." autocomplete="off"></textarea>
+                    </div>
+                </section>
+
+                <!-- ==================== VIEW: TASKS ==================== -->
+                <section id="view-tasks" class="view-section">
+                    <div class="view-header">
+                        <div class="view-title-group">
+                            <h2>Tasks</h2>
+                            <p>Review objectives, drag tasks across columns, or compile new requirements</p>
+                        </div>
+                        <div class="task-board-controls">
+                            <input type="text" id="new-task-input" placeholder="Initialize new operation objective..." autocomplete="off">
+                            <button class="primary-btn" id="create-task-board-btn">Deploy Operation</button>
+                        </div>
+                    </div>
+
+                    <!-- Command Queue (Linear-style priority board) -->
+                    <div class="today-command-queue-section">
+                        <div class="command-queue-grid">
+                            <div class="queue-column" data-priority="critical">
+                                <div class="queue-column-header critical">
+                                    <span>CRITICAL PHASES</span>
+                                    <span class="badge" id="badge-queue-critical">0</span>
+                                </div>
+                                <div class="queue-cards-list" id="queue-critical"></div>
+                            </div>
+                            <div class="queue-column" data-priority="important">
+                                <div class="queue-column-header important">
+                                    <span>IMPORTANT CHANNELS</span>
+                                    <span class="badge" id="badge-queue-important">0</span>
+                                </div>
+                                <div class="queue-cards-list" id="queue-important"></div>
+                            </div>
+                            <div class="queue-column" data-priority="scheduled">
+                                <div class="queue-column-header scheduled">
+                                    <span>SCHEDULED CHECKS</span>
+                                    <span class="badge" id="badge-queue-scheduled">0</span>
+                                </div>
+                                <div class="queue-cards-list" id="queue-scheduled"></div>
+                            </div>
+                            <div class="queue-column" data-priority="completed">
+                                <div class="queue-column-header completed">
+                                    <span>COMPLETED LOGS</span>
+                                    <span class="badge" id="badge-queue-completed">0</span>
+                                </div>
+                                <div class="queue-cards-list" id="queue-completed"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operations Catalog -->
+                    <div class="operations-catalog-section" style="margin-top: 36px;">
+                        <h3 class="queue-heading"><i data-lucide="activity" size="14" style="color:var(--accent-purple); margin-right:4px;"></i> Global Operations Matrix</h3>
+                        <div class="operations-grid" id="operations-matrix-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== VIEW: ANALYTICS ==================== -->
+                <section id="view-analytics" class="view-section">
+                    <div class="view-header">
+                        <div class="view-title-group">
+                            <h2>Analytics</h2>
+                            <p>Telemetry metrics and health tracking of your operational systems</p>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-metrics-grid">
+                        <div class="analytics-metric-card">
+                            <div class="metric-meta">
+                                <span>Active Projects</span>
+                                <h2 id="analytics-active-projects">0</h2>
+                            </div>
+                            <div class="metric-icon"><i data-lucide="folder" size="20"></i></div>
+                        </div>
+                        <div class="analytics-metric-card">
+                            <div class="metric-meta">
+                                <span>Completed Tasks</span>
+                                <h2 id="analytics-completed-tasks">0</h2>
+                            </div>
+                            <div class="metric-icon"><i data-lucide="check-circle" size="20"></i></div>
+                        </div>
+                        <div class="analytics-metric-card">
+                            <div class="metric-meta">
+                                <span>AI Memory Facts</span>
+                                <h2 id="analytics-memory-facts">0</h2>
+                            </div>
+                            <div class="metric-icon"><i data-lucide="cpu" size="20"></i></div>
+                        </div>
+                        <div class="analytics-metric-card">
+                            <div class="metric-meta">
+                                <span>System Health</span>
+                                <h2>99.8%</h2>
+                            </div>
+                            <div class="metric-icon"><i data-lucide="heart" size="20" style="color: var(--accent-green);"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="margin-top: 24px; padding: 24px;">
+                        <h3 style="margin-bottom: 12px; font-weight: 600; font-size: 15px;">System Diagnostics</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; line-height: 1.5;">Diagnostics logs verify that both speech-to-text engines, browser synthesizer pipelines, and FastAPI endpoints are in perfect synergy.</p>
+                        <div class="diagnostics-logs-box" id="diagnostics-logs">
+                            <div class="log-line"><span class="log-time">[11:05:01]</span> <span class="log-success">SYS</span>: Whisper voice recognition layer loaded cleanly in base execution thread.</div>
+                            <div class="log-line"><span class="log-time">[11:05:02]</span> <span class="log-success">SYS</span>: Browser SpeechSynthesis listener configured.</div>
+                            <div class="log-line"><span class="log-time">[11:05:03]</span> <span class="log-success">SYS</span>: FastAPI persistent JSON database server active.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== VIEW: SETTINGS ==================== -->
+                <section id="view-settings" class="view-section">
+                    <div class="view-header">
+                        <div class="view-title-group">
+                            <h2>Settings</h2>
+                            <p>Configure credentials, toggle LLM engines, and inspect persistent memory parameters</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-layout-grid">
+                        <div class="glass-card settings-card">
+                            <div class="settings-form">
+                                <div class="form-section">
+                                    <h3>User Profile</h3>
+                                    <div class="form-group">
+                                        <label for="settings-username">Display Name</label>
+                                        <input type="text" id="settings-username" value="Dharmesh">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settings-editor">Preferred Editor</label>
+                                        <input type="text" id="settings-editor" value="VS Code">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-section border-top">
+                                    <h3>Model Engine Settings</h3>
+                                    <div class="form-checkbox-group">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" id="settings-use-local" checked>
+                                            <span class="checkmark"></span>
+                                            <div class="checkbox-labels">
+                                                <strong>Use Local Ollama LLM</strong>
+                                                <p>Fallback to local offline models (llama3) for low-latency queries</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settings-local-url">Ollama Host URL</label>
+                                        <input type="text" id="settings-local-url" value="http://localhost:11434/v1">
+                                    </div>
+                                </div>
+
+                                <button class="primary-btn" id="save-settings-btn-panel">Save Configurations</button>
+                            </div>
+                        </div>
+
+                        <!-- PERSISTENT AI MEMORY SYSTEM -->
+                        <div class="glass-card settings-card">
+                            <div class="form-section">
+                                <h3>AI Memory System</h3>
+                                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">Persistent memory context is automatically retrieved during chat queries to preserve goals and technology stack preferences.</p>
+                                
+                                <div class="memory-input-wrapper">
+                                    <input type="text" id="settings-memory-input" placeholder="Add memory fact (e.g. ScholarWeb Stack: Next.js)...">
+                                    <button class="primary-btn" id="add-memory-btn">+</button>
+                                </div>
+
+                                <ul class="memory-facts-list" id="settings-memory-list">
+                                    <!-- Populated dynamically via app.js -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay hidden" id="project-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Create New Project</h3>
+                <button class="close-btn" id="close-project-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="modal-proj-name">Project Name</label>
+                    <input type="text" id="modal-proj-name" placeholder="e.g. ScholarWeb">
+                </div>
+                <div class="form-group">
+                    <label for="modal-proj-stack">Tech Stack (comma separated)</label>
+                    <input type="text" id="modal-proj-stack" placeholder="e.g. Next.js, Node.js, PostgreSQL">
+                </div>
+                <div class="form-group">
+                    <label for="modal-proj-status">Status</label>
+                    <select id="modal-proj-status">
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Workspace Progress Setup</label>
+                    <div class="progress-checks">
+                        <label><input type="checkbox" id="check-frontend" checked> Frontend</label>
+                        <label><input type="checkbox" id="check-backend"> Backend</label>
+                        <label><input type="checkbox" id="check-db"> Database</label>
+                        <label><input type="checkbox" id="check-auth"> Authentication</label>
+                        <label><input type="checkbox" id="check-deploy"> Deployment</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" id="cancel-project-modal">Cancel</button>
+                <button class="primary-btn" id="submit-project-modal">Create Workspace</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./app.js?v=2.4.16"></script>
     <script>
         lucide.createIcons();
+    </script>
+    
+    <!-- JARVIS OS Animated Knowledge Network Background -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('jarvis-bg-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            let nodes = [];
+            const maxDistance = 115;
+            const nodeCount = Math.min(85, Math.floor((width * height) / 14000)); // Dynamic count based on screen size
+            
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                initNodes();
+            });
+            
+            let mouse = { x: -1000, y: -1000, active: false };
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                mouse.active = true;
+            });
+            window.addEventListener('mouseleave', () => {
+                mouse.x = -1000;
+                mouse.y = -1000;
+                mouse.active = false;
+            });
+            
+            function initNodes() {
+                nodes = [];
+                for (let i = 0; i < nodeCount; i++) {
+                    nodes.push({
+                        baseX: Math.random() * width,
+                        baseY: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.16, // Slow immersive drift
+                        vy: (Math.random() - 0.5) * 0.16,
+                        z: 0.6 + Math.random() * 1.4, // Depth Z coordinate (0.6 is close, 2.0 is deep)
+                        radius: 0.8 + Math.random() * 1.2, // Small glowing particles
+                        pulse: Math.random() * Math.PI,
+                        pulseSpeed: 0.003 + Math.random() * 0.005
+                    });
+                }
+            }
+            
+            initNodes();
+            
+            function animate() {
+                // Generate soft, futuristic trailing trails by clearing with fractional opacity
+                ctx.fillStyle = 'rgba(10, 10, 10, 0.16)';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Calculate 3D Parallax offset relative to screen center
+                let parallaxX = 0;
+                let parallaxY = 0;
+                if (mouse.active) {
+                    parallaxX = (mouse.x - width / 2) * 0.025; // Subtle 2.5% max shift
+                    parallaxY = (mouse.y - height / 2) * 0.025;
+                }
+                
+                // Draw links first (underneath nodes)
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < nodes.length; i++) {
+                    const n1 = nodes[i];
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const n2 = nodes[j];
+                        
+                        // Render coordinates calculated dynamically with depth scaling
+                        const x1 = n1.baseX + parallaxX / n1.z;
+                        const y1 = n1.baseY + parallaxY / n1.z;
+                        const x2 = n2.baseX + parallaxX / n2.z;
+                        const y2 = n2.baseY + parallaxY / n2.z;
+                        
+                        const dx = x1 - x2;
+                        const dy = y1 - y2;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < maxDistance) {
+                            const averageDepth = (n1.z + n2.z) / 2;
+                            const alpha = (1 - (dist / maxDistance)) * 0.04 / averageDepth; // Ambient connection opacity
+                            ctx.beginPath();
+                            ctx.moveTo(x1, y1);
+                            ctx.lineTo(x2, y2);
+                            ctx.strokeStyle = `rgba(139, 92, 246, ${alpha})`;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                
+                // Update and draw nodes
+                nodes.forEach(n => {
+                    n.pulse += n.pulseSpeed;
+                    const sizePulse = Math.sin(n.pulse) * 0.2;
+                    
+                    // Slow drift motion
+                    n.baseX += n.vx;
+                    n.baseY += n.vy;
+                    
+                    // Bounce off boundaries
+                    if (n.baseX < 0 || n.baseX > width) n.vx *= -1;
+                    if (n.baseY < 0 || n.baseY > height) n.vy *= -1;
+                    
+                    n.baseX = Math.max(0, Math.min(width, n.baseX));
+                    n.baseY = Math.max(0, Math.min(height, n.baseY));
+                    
+                    // Smooth mouse push physics
+                    if (mouse.active) {
+                        const mdx = n.baseX - mouse.x;
+                        const mdy = n.baseY - mouse.y;
+                        const dist = Math.sqrt(mdx * mdx + mdy * mdy);
+                        if (dist < 130) {
+                            const force = (130 - dist) / 130;
+                            n.baseX += (mdx / dist) * force * 0.4 / n.z; // Dampened by depth Z
+                            n.baseY += (mdy / dist) * force * 0.4 / n.z;
+                        }
+                    }
+                    
+                    // Render coordinates with parallax depth
+                    const rx = n.baseX + parallaxX / n.z;
+                    const ry = n.baseY + parallaxY / n.z;
+                    
+                    // Draw node
+                    const opacity = (0.04 + ((Math.sin(n.pulse) + 1) / 2) * 0.04) / n.z; // Lower opacity for deeper nodes
+                    const size = (n.radius + sizePulse) / n.z; // Smaller size for deeper nodes
+                    
+                    ctx.beginPath();
+                    ctx.arc(rx, ry, Math.max(0.5, size), 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(139, 92, 246, ${opacity})`;
+                    ctx.fill();
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        })();
     </script>
 </body>
 </html>

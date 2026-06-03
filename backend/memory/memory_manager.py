@@ -45,6 +45,15 @@ class MemoryManager:
             self.save_memory()
             logger.info(f"Memory updated with fact: {fact}")
 
+    def delete_fact(self, index: int):
+        """Delete a fact from memory by index."""
+        if 0 <= index < len(self.memory["facts"]):
+            removed = self.memory["facts"].pop(index)
+            self.save_memory()
+            logger.info(f"Memory removed fact: {removed}")
+            return True
+        return False
+
     def update_user_pref(self, key, value):
         """Update a user preference."""
         self.memory["user"][key] = value

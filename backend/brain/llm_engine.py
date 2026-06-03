@@ -16,13 +16,16 @@ class LLMEngine:
     def __init__(self):
         self.openai_client = None
         self.gemini_model = None
+        self.active_agent = None
         self._initialize_engines()
 
         self.base_system_prompt = (
-            "You are JARVIS, a highly advanced Personal AI Operating Layer. "
-            "You are helpful, highly efficient, and have a sleek, professional, and slightly technical personality. "
-            "Address the user with respect (using 'Sir' or their name), but maintain a friendly, hacker-engineer tone. "
-            "Your responses should be concise but comprehensive when needed.\n\n"
+            "You are JARVIS, an incredibly advanced, human-friendly, and conversational Personal AI Operating Companion. "
+            "Your personality is warm, natural, highly empathetic, and brilliantly intuitive—never robotic, rigid, or dry. "
+            "Speak like a trusted, top-tier engineer and dedicated partner. Respond with fluid, elegant, and natural phrasing "
+            "as if you are in a real hands-free spoken conversation. Avoid list-heavy formats, repeating raw technical logs, "
+            "or structuring responses with robotic headings unless specifically requested. Address the user naturally (using 'Dharmesh' or 'Sir' where appropriate) "
+            "and always maintain a highly engaging, warm, and conversational tone.\n\n"
             "OPERATING CONTEXT:\n"
             f"- Current Time: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
             f"- OS: macOS (Darwin)\n"
@@ -54,8 +57,8 @@ class LLMEngine:
         if Config.is_valid_key(Config.OPENAI_API_KEY):
             try:
                 self.openai_client = OpenAI(api_key=Config.OPENAI_API_KEY)
-                self.openai_model = "gpt-4-turbo-preview"
-                logger.info("OpenAI Engine Initialized.")
+                self.openai_model = "gpt-4o-mini"
+                logger.info("OpenAI Engine Initialized (Model: gpt-4o-mini).")
             except Exception as e:
                 logger.error(f"OpenAI init failed: {e}")
 
@@ -64,8 +67,8 @@ class LLMEngine:
             if genai:
                 try:
                     genai.configure(api_key=Config.GOOGLE_API_KEY)
-                    self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
-                    logger.info("Gemini Engine Initialized.")
+                    self.gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+                    logger.info("Gemini Engine Initialized (Model: gemini-1.5-flash).")
                 except Exception as e:
                     logger.error(f"Gemini init failed: {e}")
 
@@ -103,14 +106,38 @@ class LLMEngine:
                 return "Sir, I cannot connect to your local Ollama server. Please ensure it is running at " + Config.OLLAMA_BASE_URL + " or provide a cloud API key in the .env file."
             return "Sir, my cognitive processors are offline. Please provide a valid OpenAI or Google API key to proceed."
 
+        local_failed = False
+        local_timeout = False
+
         # Try providers in order
         for provider_name, client, model in providers:
             try:
                 return self._execute_reasoning_loop(provider_name, client, model, messages, user_input)
             except Exception as e:
                 logger.error(f"{provider_name} execution failed: {str(e)}")
+                if provider_name == "Local":
+                    local_failed = True
+                    err_msg = str(e).lower()
+                    if "timeout" in err_msg or "timedout" in err_msg or "timed out" in err_msg or "deadline" in err_msg:
+                        local_timeout = True
                 # Continue to next provider
                 continue
+
+        # If we got here, all providers failed
+        if local_timeout and len(providers) == 1:
+            return (
+                "Sir, the local Ollama engine took too long to respond (timeout of 10 seconds exceeded).\n\n"
+                "To resolve this and achieve **instant answering**:\n"
+                "1. **Switch to a faster, smaller model**: Modify `LOCAL_MODEL_NAME` in your `.env` to a lightweight model such as `llama3.2:1b` or `qwen2.5:1.5b` (which respond in milliseconds even on standard CPUs).\n"
+                "2. **Enable hardware acceleration**: Ensure Ollama is configured to use your GPU (Metal/CUDA) rather than CPU.\n"
+                "3. **Add Cloud API Keys**: Provide a valid OpenAI (`OPENAI_API_KEY`) or Google Gemini (`GOOGLE_API_KEY`) key in your `.env` for ultra-fast, high-performance sub-second fallback."
+            )
+        elif local_failed and len(providers) == 1:
+            return (
+                "Sir, I was unable to get a response from your local Ollama server.\n\n"
+                "Please verify that the Ollama app is running on your Mac and configured correctly. "
+                "Alternatively, you can provide a valid OpenAI or Gemini API key in your `.env` file for high-performance cloud fallback."
+            )
 
         return "I apologize Sir, but all my neural engines have failed to respond. There might be a network or configuration issue."
 
@@ -155,7 +182,10 @@ class LLMEngine:
                 return response_message.content
 
     def _prepare_messages(self, user_input, history):
-        dynamic_prompt = f"{self.base_system_prompt}\n\nMEMORY CONTEXT:\n{memory_manager.get_context_string()}"
+        agent_prompt = ""
+        if self.active_agent:
+            agent_prompt = f"\n\nACTIVE AGENT ROLE:\n{self.active_agent}"
+        dynamic_prompt = f"{self.base_system_prompt}{agent_prompt}\n\nMEMORY CONTEXT:\n{memory_manager.get_context_string()}"
         messages = [{"role": "system", "content": dynamic_prompt}]
         if history:
             messages.extend(history)
