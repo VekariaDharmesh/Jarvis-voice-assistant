@@ -114,9 +114,10 @@ const cancelProjectModal = document.getElementById('cancel-project-modal');
 const submitProjectModal = document.getElementById('submit-project-modal');
 
 // Operations & Today's Command Queue selectors
-const queueCritical = document.getElementById('queue-critical');
-const queueImportant = document.getElementById('queue-important');
-const queueScheduled = document.getElementById('queue-scheduled');
+const queueBacklog = document.getElementById('queue-backlog');
+const queueProgress = document.getElementById('queue-progress');
+const queueReview = document.getElementById('queue-review');
+const queueBlocked = document.getElementById('queue-blocked');
 const queueCompleted = document.getElementById('queue-completed');
 const operationsMatrixContainer = document.getElementById('operations-matrix-container');
 const newTaskInput = document.getElementById('new-task-input');
@@ -128,6 +129,7 @@ const restoreAgentDefault = document.getElementById('restore-agent-default');
 
 // Notes notepad
 const notesTextarea = document.getElementById('notes-textarea');
+const notesPreview = document.getElementById('notes-preview');
 const saveNotesBtn = document.getElementById('save-notes-btn');
 const notesSaveStatus = document.getElementById('notes-save-status');
 
@@ -211,6 +213,7 @@ async function loadDashboardData() {
             notesTextarea.value = appState.notes;
             notesSaveStatus.textContent = "Draft Synced";
             notesSaveStatus.style.color = "var(--accent-green)";
+            renderNotesPreview();
         }
         updateAnalyticsUI();
         
@@ -246,6 +249,8 @@ function switchView(viewName) {
     // 4. Specific Action on View Mount
     if (viewName === 'notes') {
         notesTextarea.focus();
+    } else if (viewName === 'analytics') {
+        setTimeout(initMemoryNodeGraph, 50);
     }
     
     // Auto collapse left sidebar if on mobile screens
@@ -943,22 +948,37 @@ function calculateProgressPercent(progress) {
 function renderRecentProjects() {
     if (!homeRecentProjectsContainer) return;
     homeRecentProjectsContainer.innerHTML = "";
-    // Only map the latest three projects
     const recents = appState.projects.slice(-3);
 
     if (recents.length === 0) {
-        homeRecentProjectsContainer.innerHTML = `<p style="font-size:11px; color:var(--text-muted); padding:10px 0;">No active projects recorded.</p>`;
+        homeRecentProjectsContainer.innerHTML = `<p style="font-size:12px; color:var(--text-muted); padding:20px 0; text-align:center;">No active projects recorded.</p>`;
         return;
     }
 
     recents.forEach(p => {
-        const row = document.createElement('div');
-        row.className = "recent-project-row";
-        row.innerHTML = `
-            <span class="recent-project-name">${p.name}</span>
-            <span class="project-status ${p.status.toLowerCase().replace(' ', '-')}">${p.status}</span>
+        const pct = calculateProgressPercent(p.progress);
+        let healthText = "Stable";
+        let healthClass = "stable";
+        if (pct >= 80) { healthText = "Excellent"; healthClass = "excellent"; }
+        else if (pct >= 50) { healthText = "Stable"; healthClass = "stable"; }
+        else { healthText = "Attention"; healthClass = "attention"; }
+
+        const card = document.createElement('div');
+        card.className = "home-project-card";
+        card.innerHTML = `
+            <div class="project-card-top" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span class="project-title" style="font-size:13px; font-weight:600; color:white;">${p.name}</span>
+                <span class="project-health-badge ${healthClass}" style="font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px; text-transform:uppercase;">${healthText}</span>
+            </div>
+            <div class="project-card-meta" style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--text-secondary); margin-bottom:8px;">
+                <span>Updated ${p.lastUpdated || 'Recently'}</span>
+                <span>${pct}%</span>
+            </div>
+            <div class="project-card-progress" style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+                <div class="progress-fill" style="width: ${pct}%; height:100%; background:var(--accent-purple); border-radius:2px;"></div>
+            </div>
         `;
-        homeRecentProjectsContainer.appendChild(row);
+        homeRecentProjectsContainer.appendChild(card);
     });
 }
 
@@ -1009,113 +1029,102 @@ function renderProjectsGrid() {
         const dbPct = p.progress["Database"] === "completed" ? 100 : (p.progress["Database"] === "in_progress" ? 50 : 0);
 
         const card = document.createElement('div');
-        card.className = `mission-control-panel ${p.status.toLowerCase().replace(' ', '-')}`;
+        card.className = `mission-control-panel dense-card ${p.status.toLowerCase().replace(' ', '-')}`;
+        
+        // Alternating template views for dynamic layout variety
+        const isAlternate = (p.id.length % 2 === 0);
+        let telemetryView = "";
+        
+        if (isAlternate) {
+            // Layout Type 1: GitHub & Commit Telemetry
+            telemetryView = `
+                <div class="project-git-telemetry" style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.15); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color); margin-bottom:12px;">
+                    <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-secondary);">
+                        <i data-lucide="git-branch" size="12" style="color:var(--text-muted);"></i>
+                        <span>main</span>
+                        <span style="color:var(--text-muted);">·</span>
+                        <code>7a2bf9c</code>
+                    </div>
+                    <span style="font-size:10px; color:var(--accent-green); background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); padding:1px 6px; border-radius:10px; font-weight:600;">GitHub Active</span>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-bottom:12px; display:flex; justify-content:space-between;">
+                    <span>Last Commit: <strong>Implement Auth middleware</strong></span>
+                    <span style="color:var(--text-muted);">2h ago</span>
+                </div>
+            `;
+        } else {
+            // Layout Type 2: Mini Sparkline & Deployment Health
+            telemetryView = `
+                <div class="project-perf-telemetry" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:12px;">
+                    <div style="flex:1; display:flex; flex-direction:column; gap:2px;">
+                        <span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Build Telemetry</span>
+                        <span style="font-size:11px; color:white; font-weight:600;">Deployment: Success</span>
+                    </div>
+                    <svg class="sparkline" width="80" height="24" viewBox="0 0 80 24" style="stroke:var(--accent-purple); stroke-width:1.5; fill:none; stroke-linecap:round;">
+                        <path d="M 0 12 Q 10 2 20 18 T 40 6 T 60 20 T 80 8" />
+                    </svg>
+                </div>
+                <div style="font-size:11px; color:var(--text-secondary); margin-bottom:12px; display:flex; justify-content:space-between;">
+                    <span>Operations URL: <a href="#" style="color:var(--accent-purple); text-decoration:none;">scholarweb.vercel.app</a></span>
+                    <span style="color:var(--text-muted);">SSL Active</span>
+                </div>
+            `;
+        }
+
         card.innerHTML = `
-            <!-- Header -->
-            <div class="mission-panel-header">
+            <div class="mission-panel-header" style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
                 <div class="mission-title-area">
-                    <span class="telemetry-label" style="color:var(--accent-purple);">Strategic Mission</span>
-                    <h3>${p.name}</h3>
-                    <p class="mission-objective-text">Objective: Build, secure, and auto-deploy developer assets</p>
+                    <span class="telemetry-label" style="font-size:9px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); display:block; margin-bottom:2px;">Active Workspace</span>
+                    <h3 style="font-size:15px; font-weight:700; color:white; margin:0;">${p.name}</h3>
                 </div>
-                <span class="mission-status-badge ${p.status.toLowerCase().replace(' ', '-')}">${p.status}</span>
-            </div>
-
-            <!-- Telemetry Grid -->
-            <div class="mission-telemetry-grid">
-                <div class="telemetry-item">
-                    <span class="telemetry-label">AI Confidence</span>
-                    <span class="telemetry-value purple">${confidence}%</span>
-                </div>
-                <div class="telemetry-item">
-                    <span class="telemetry-label">Completion</span>
-                    <span class="telemetry-value">${pct}%</span>
-                </div>
-                <div class="telemetry-item">
-                    <span class="telemetry-label">Active Agent</span>
-                    <span class="telemetry-value">${appState.activeAgent || 'Jarvis Core'}</span>
-                </div>
-                <div class="telemetry-item">
-                    <span class="telemetry-label">Last Activity</span>
-                    <span class="telemetry-value">${p.lastUpdated || 'Recently'}</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); color:var(--text-secondary);">${healthText.toUpperCase()} ${confidence}%</span>
+                    <span class="mission-status-badge ${p.status.toLowerCase().replace(' ', '-')}">${p.status}</span>
                 </div>
             </div>
 
-            <!-- AI Recommendation Engine -->
-            <div class="jarvis-recommendation-block">
-                <div class="recommendation-header">
-                    <i data-lucide="bot" size="12" style="color:var(--accent-purple);"></i>
-                    <span>Jarvis Recommendation</span>
+            <div class="project-progress-visualization" style="margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--text-secondary); margin-bottom:4px;">
+                    <span>Deployment Progress</span>
+                    <span>${pct}%</span>
                 </div>
-                <div class="recommendation-action">${recommendedAction}</div>
-                <div class="recommendation-meta-row">
-                    <span>Priority: <strong style="color:${recommendedPriority === 'Critical' ? 'var(--accent-red)' : (recommendedPriority === 'High' ? 'var(--accent-yellow)' : 'var(--accent-purple)')}">${recommendedPriority}</strong></span>
-                    <span>Estimated Time: <strong>${recommendedTime}</strong></span>
+                <div style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                    <div style="width:${pct}%; height:100%; background:var(--accent-purple); border-radius:3px; transition:width 0.3s ease;"></div>
                 </div>
             </div>
 
-            <!-- Mission Health System -->
-            <div class="mission-health-system">
-                <div class="health-status-header">
-                    <span class="health-label">Mission Health Telemetry</span>
-                    <span class="health-value ${healthClass}">${healthText.toUpperCase()}</span>
-                </div>
-                <div class="subsystem-health-bars">
-                    <div class="subsystem-item">
-                        <div class="subsystem-name-row">
-                            <span>Frontend UI</span>
-                            <span>${fePct}%</span>
-                        </div>
-                        <div class="subsystem-progress-bar">
-                            <div class="subsystem-progress-fill ${fePct >= 80 ? 'green' : (fePct >= 50 ? 'yellow' : 'red')}" style="width: ${fePct}%"></div>
-                        </div>
+            <!-- Telemetry View -->
+            ${telemetryView}
+
+            <!-- Subsystem Health Bars (Collapsed & High-density) -->
+            <div class="dense-health-metrics" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; border-top:1px solid var(--border-color); padding-top:10px; margin-bottom:12px; font-size:10px;">
+                <div>
+                    <span style="color:var(--text-muted); display:block; margin-bottom:2px;">Frontend UI</span>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span class="metric-status-dot ${fePct >= 80 ? 'green' : (fePct >= 50 ? 'yellow' : 'red')}" style="width:6px; height:6px; border-radius:50%; background:${fePct >= 80 ? 'var(--accent-green)' : (fePct >= 50 ? 'var(--accent-yellow)' : 'var(--accent-red)')}; display:inline-block;"></span>
+                        <span style="font-weight:600; color:var(--text-secondary);">${fePct}%</span>
                     </div>
-                    <div class="subsystem-item">
-                        <div class="subsystem-name-row">
-                            <span>Backend Engine</span>
-                            <span>${bePct}%</span>
-                        </div>
-                        <div class="subsystem-progress-bar">
-                            <div class="subsystem-progress-fill ${bePct >= 80 ? 'green' : (bePct >= 50 ? 'yellow' : 'red')}" style="width: ${bePct}%"></div>
-                        </div>
+                </div>
+                <div>
+                    <span style="color:var(--text-muted); display:block; margin-bottom:2px;">Backend</span>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span class="metric-status-dot ${bePct >= 80 ? 'green' : (bePct >= 50 ? 'yellow' : 'red')}" style="width:6px; height:6px; border-radius:50%; background:${bePct >= 80 ? 'var(--accent-green)' : (bePct >= 50 ? 'var(--accent-yellow)' : 'var(--accent-red)')}; display:inline-block;"></span>
+                        <span style="font-weight:600; color:var(--text-secondary);">${bePct}%</span>
                     </div>
-                    <div class="subsystem-item">
-                        <div class="subsystem-name-row">
-                            <span>Infrastructure</span>
-                            <span>${dbPct}%</span>
-                        </div>
-                        <div class="subsystem-progress-bar">
-                            <div class="subsystem-progress-fill ${dbPct >= 80 ? 'green' : (dbPct >= 50 ? 'yellow' : 'red')}" style="width: ${dbPct}%"></div>
-                        </div>
+                </div>
+                <div>
+                    <span style="color:var(--text-muted); display:block; margin-bottom:2px;">Infra</span>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span class="metric-status-dot ${dbPct >= 80 ? 'green' : (dbPct >= 50 ? 'yellow' : 'red')}" style="width:6px; height:6px; border-radius:50%; background:${dbPct >= 80 ? 'var(--accent-green)' : (dbPct >= 50 ? 'var(--accent-yellow)' : 'var(--accent-red)')}; display:inline-block;"></span>
+                        <span style="font-weight:600; color:var(--text-secondary);">${dbPct}%</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Mission Timeline -->
-            <div class="mission-timeline-block">
-                <div class="timeline-heading">
-                    <i data-lucide="history" size="11" style="color:var(--text-muted); margin-right:4px;"></i>
-                    <span>Mission Timeline Feed</span>
-                </div>
-                <div class="timeline-feed">
-                    <div class="timeline-event milestone">
-                        <span class="timeline-time">09:00</span>
-                        <span class="timeline-desc">Initialized mission workspace <strong>${p.name}</strong></span>
-                    </div>
-                    <div class="timeline-event">
-                        <span class="timeline-time">10:20</span>
-                        <span class="timeline-desc">Database schema initialized successfully.</span>
-                    </div>
-                    <div class="timeline-event milestone">
-                        <span class="timeline-time">11:45</span>
-                        <span class="timeline-desc">Active agent <strong>${appState.activeAgent || 'Jarvis Core'}</strong> deployed to backend endpoints.</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="mission-panel-footer">
-                <button class="delete-proj-btn text-action-btn" data-id="${p.id}" style="color:var(--accent-red); transition: opacity 120ms;">Erase Mission Cache</button>
+            <!-- Footer Action Row -->
+            <div class="mission-panel-footer" style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:10px;">
+                <span style="font-size:10px; color:var(--text-muted);">Synced via Git Gateway</span>
+                <button class="delete-proj-btn text-action-btn" data-id="${p.id}" style="color:var(--accent-red); font-size:11px; background:none; border:none; cursor:pointer; font-weight:600; opacity:0.8; transition:opacity 0.2s;">Delete Workspace</button>
             </div>
         `;
         
@@ -1249,18 +1258,20 @@ function getTaskSpecs(t, index) {
 }
 
 function renderTasksKanban() {
-    if (!queueCritical || !queueImportant || !queueScheduled || !queueCompleted || !operationsMatrixContainer) return;
+    if (!queueBacklog || !queueProgress || !queueReview || !queueBlocked || !queueCompleted || !operationsMatrixContainer) return;
 
     // Reset all list elements
-    queueCritical.innerHTML = "";
-    queueImportant.innerHTML = "";
-    queueScheduled.innerHTML = "";
+    queueBacklog.innerHTML = "";
+    queueProgress.innerHTML = "";
+    queueReview.innerHTML = "";
+    queueBlocked.innerHTML = "";
     queueCompleted.innerHTML = "";
     operationsMatrixContainer.innerHTML = "";
 
-    let criticalCount = 0;
-    let importantCount = 0;
-    let scheduledCount = 0;
+    let backlogCount = 0;
+    let progressCount = 0;
+    let reviewCount = 0;
+    let blockedCount = 0;
     let completedCount = 0;
 
     appState.tasks.forEach((t, idx) => {
@@ -1332,33 +1343,39 @@ function renderTasksKanban() {
             miniCard.style.opacity = '1';
         });
 
-        // Route mini card to appropriate command queue columns
-        if (t.status === "completed") {
+        // Route mini card to appropriate command queue columns based on t.status
+        const status = t.status ? t.status.toLowerCase() : 'pending';
+        if (status === "completed") {
             queueCompleted.appendChild(miniCard);
             completedCount++;
-        } else if (specs.priority === "critical") {
-            queueCritical.appendChild(miniCard);
-            criticalCount++;
-        } else if (specs.priority === "high") {
-            queueImportant.appendChild(miniCard);
-            importantCount++;
+        } else if (status === "blocked") {
+            queueBlocked.appendChild(miniCard);
+            blockedCount++;
+        } else if (status === "review") {
+            queueReview.appendChild(miniCard);
+            reviewCount++;
+        } else if (status === "in_progress" || status === "progress") {
+            queueProgress.appendChild(miniCard);
+            progressCount++;
         } else {
-            queueScheduled.appendChild(miniCard);
-            scheduledCount++;
+            queueBacklog.appendChild(miniCard);
+            backlogCount++;
         }
     });
 
     // Update dynamic counter badges
-    document.getElementById('badge-queue-critical').textContent = criticalCount;
-    document.getElementById('badge-queue-important').textContent = importantCount;
-    document.getElementById('badge-queue-scheduled').textContent = scheduledCount;
-    document.getElementById('badge-queue-completed').textContent = completedCount;
+    if (document.getElementById('badge-queue-backlog')) document.getElementById('badge-queue-backlog').textContent = backlogCount;
+    if (document.getElementById('badge-queue-progress')) document.getElementById('badge-queue-progress').textContent = progressCount;
+    if (document.getElementById('badge-queue-review')) document.getElementById('badge-queue-review').textContent = reviewCount;
+    if (document.getElementById('badge-queue-blocked')) document.getElementById('badge-queue-blocked').textContent = blockedCount;
+    if (document.getElementById('badge-queue-completed')) document.getElementById('badge-queue-completed').textContent = completedCount;
 
     // Drop bindings on Columns
     const columns = [
-        { el: queueCritical, status: 'in_progress' },
-        { el: queueImportant, status: 'in_progress' },
-        { el: queueScheduled, status: 'in_progress' },
+        { el: queueBacklog, status: 'pending' },
+        { el: queueProgress, status: 'in_progress' },
+        { el: queueReview, status: 'review' },
+        { el: queueBlocked, status: 'blocked' },
         { el: queueCompleted, status: 'completed' }
     ];
 
@@ -1381,14 +1398,7 @@ function renderTasksKanban() {
             
             if (targetTaskIndex !== -1) {
                 const targetTask = appState.tasks[targetTaskIndex];
-                
-                // If dropped in Completed column, mark completed status
-                if (col.status === 'completed') {
-                    targetTask.status = 'completed';
-                } else {
-                    // Restore back to in_progress/pending
-                    targetTask.status = 'in_progress';
-                }
+                targetTask.status = col.status;
                 
                 try {
                     await fetch(`${API_BASE}/tasks`, {
@@ -1432,23 +1442,65 @@ async function createKanbanTask() {
 }
 
 // --- SPECIALIZED AGENTS PERSONAS MANAGEMENT ---
-// --- SPECIALIZED AGENTS PERSONAS MANAGEMENT ---
 function renderAgentGrid() {
     if (!agentsSelectionGrid) return;
     agentsSelectionGrid.innerHTML = "";
 
-    Object.keys(AGENTS).forEach(key => {
+    Object.keys(AGENTS).forEach((key, idx) => {
         if (key === "Default") return; // Keep Core Default in background control only
 
         const agent = AGENTS[key];
         const card = document.createElement('div');
         card.className = `agent-card ${appState.activeAgent === key ? 'active' : ''}`;
         
+        // Generate pseudo-random resource metrics
+        const cpu = Math.floor(Math.sin(idx + 1) * 20 + 25);
+        const mem = Math.floor(Math.cos(idx + 2) * 80 + 190);
+
+        // Scan current tasks list for this agent
+        let currentTask = "Standby Loop";
+        const relatedTasks = appState.tasks.filter(t => {
+            const specs = getTaskSpecs(t, idx);
+            return specs.agent.toLowerCase().includes(agent.name.split(' ')[0].toLowerCase());
+        });
+        if (relatedTasks.length > 0) {
+            currentTask = relatedTasks[0].title;
+        }
+        
         card.innerHTML = `
-            <div class="agent-avatar">${agent.avatar}</div>
-            <div class="agent-name">${agent.name}</div>
-            <div class="agent-role">specialist</div>
+            <div class="agent-card-header">
+                <div class="agent-avatar">${agent.avatar}</div>
+                <div class="agent-meta">
+                    <div class="agent-name">${agent.name}</div>
+                    <div class="agent-role">specialist agent</div>
+                </div>
+                <div class="agent-status-indicator active-pulse"></div>
+            </div>
+            
             <div class="agent-desc">${agent.desc}</div>
+            
+            <div class="agent-resource-usage">
+                <div class="resource-bar">
+                    <div class="resource-label">CPU Core Usage <span>${cpu}%</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width: ${cpu}%;"></div></div>
+                </div>
+                <div class="resource-bar">
+                    <div class="resource-label">RAM Allocated <span>${mem} MB / 512 MB</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width: ${(mem/512)*100}%;"></div></div>
+                </div>
+            </div>
+
+            <div class="agent-current-task">
+                <div class="logs-header" style="font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Active Subtask</div>
+                <div class="current-task-value">${currentTask}</div>
+            </div>
+
+            <div class="agent-logs-container">
+                <div class="logs-header">Live Telemetry logs</div>
+                <div class="logs-body">
+                    ${agent.activity.map(act => `<div class="log-line">> ${act}</div>`).join('')}
+                </div>
+            </div>
         `;
 
         card.addEventListener('click', () => activateAgent(key));
@@ -1526,12 +1578,25 @@ function setupNotesAutoSaveDebounce() {
         notesSaveStatus.textContent = "Typing...";
         notesSaveStatus.style.color = "var(--accent-yellow)";
         
+        renderNotesPreview();
+        
         clearTimeout(noteDebounceTimer);
         
         noteDebounceTimer = setTimeout(async () => {
             await saveNotesContentToServer();
         }, 1200); // 1.2 second debounce delay before auto-saving draft
     });
+}
+
+function renderNotesPreview() {
+    if (!notesTextarea || !notesPreview) return;
+    const text = notesTextarea.value || "";
+    try {
+        const html = typeof marked.parse === 'function' ? marked.parse(text) : marked(text);
+        notesPreview.innerHTML = html;
+    } catch (e) {
+        notesPreview.textContent = text;
+    }
 }
 
 async function saveNotesContentToServer() {
@@ -1596,6 +1661,7 @@ async function loadMemoryFacts() {
         appState.facts = data.facts || [];
         renderMemoryFactsList();
         updateAnalyticsUI();
+        initMemoryNodeGraph();
     } catch (err) {
         console.error("Load Memory Facts Error:", err);
     }
@@ -1694,4 +1760,187 @@ function updateAnalyticsUI() {
     if (memoryFactsEl) {
         memoryFactsEl.textContent = appState.facts ? appState.facts.length : 0;
     }
+}
+
+// --- VISUAL INTERACTIVE MEMORY NODE GRAPH ---
+let memoryGraphAnimationId = null;
+function initMemoryNodeGraph() {
+    const canvas = document.getElementById('memory-nodes-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    
+    if (memoryGraphAnimationId) {
+        cancelAnimationFrame(memoryGraphAnimationId);
+    }
+
+    const resizeCanvas = () => {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    };
+    resizeCanvas();
+
+    const nodes = [];
+    const links = [];
+
+    const coreNode = {
+        id: "core",
+        label: "Jarvis OS",
+        x: canvas.getBoundingClientRect().width / 2,
+        y: canvas.getBoundingClientRect().height / 2,
+        r: 14,
+        color: "#8b5cf6",
+        vx: 0,
+        vy: 0,
+        fixed: true
+    };
+    nodes.push(coreNode);
+
+    const categoryHubs = [
+        { id: "projects", label: "Missions", color: "#10b981", angle: 0 },
+        { id: "agents", label: "Agents", color: "#f59e0b", angle: 120 },
+        { id: "facts", label: "Knowledge", color: "#3b82f6", angle: 240 }
+    ];
+
+    categoryHubs.forEach(hub => {
+        const rad = (hub.angle * Math.PI) / 180;
+        const dist = 70;
+        const node = {
+            id: hub.id,
+            label: hub.label,
+            x: coreNode.x + Math.cos(rad) * dist,
+            y: coreNode.y + Math.sin(rad) * dist,
+            r: 10,
+            color: hub.color,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5
+        };
+        nodes.push(node);
+        links.push({ source: coreNode, target: node });
+    });
+
+    const factsHub = nodes.find(n => n.id === "facts");
+    const factsList = appState.facts || [];
+    factsList.forEach((fact, index) => {
+        const labelText = fact.length > 22 ? fact.substring(0, 20) + "..." : fact;
+        const angle = (index / Math.max(1, factsList.length)) * Math.PI * 2;
+        const dist = 100 + Math.random() * 30;
+        const node = {
+            id: `fact-${index}`,
+            label: labelText,
+            fullText: fact,
+            x: factsHub.x + Math.cos(angle) * dist,
+            y: factsHub.y + Math.sin(angle) * dist,
+            r: 6,
+            color: "rgba(139, 92, 246, 0.85)",
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5
+        };
+        nodes.push(node);
+        links.push({ source: factsHub, target: node });
+    });
+
+    let mouse = { x: -1000, y: -1000, active: false };
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+        mouse.active = true;
+    });
+    canvas.addEventListener('mouseleave', () => {
+        mouse.active = false;
+    });
+
+    const animate = () => {
+        const containerWidth = canvas.getBoundingClientRect().width;
+        const containerHeight = canvas.getBoundingClientRect().height;
+        if (containerWidth === 0 || containerHeight === 0) return;
+        
+        ctx.clearRect(0, 0, containerWidth, containerHeight);
+
+        coreNode.x = containerWidth / 2;
+        coreNode.y = containerHeight / 2;
+
+        for (let i = 0; i < nodes.length; i++) {
+            const n1 = nodes[i];
+            if (n1.fixed) continue;
+
+            links.forEach(link => {
+                if (link.source.id === n1.id || link.target.id === n1.id) {
+                    const other = link.source.id === n1.id ? link.target : link.source;
+                    const dx = other.x - n1.x;
+                    const dy = other.y - n1.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                    const force = (dist - 50) * 0.006;
+                    n1.vx += (dx / dist) * force;
+                    n1.vy += (dy / dist) * force;
+                }
+            });
+
+            for (let j = 0; j < nodes.length; j++) {
+                if (i === j) continue;
+                const n2 = nodes[j];
+                const dx = n2.x - n1.x;
+                const dy = n2.y - n1.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                if (dist < 80) {
+                    const force = (80 - dist) * 0.008;
+                    n1.vx -= (dx / dist) * force;
+                    n1.vy -= (dy / dist) * force;
+                }
+            }
+
+            if (mouse.active) {
+                const dx = mouse.x - n1.x;
+                const dy = mouse.y - n1.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                if (dist < 60) {
+                    const force = (60 - dist) * 0.04;
+                    n1.vx -= (dx / dist) * force;
+                    n1.vy -= (dy / dist) * force;
+                }
+            }
+
+            n1.vx *= 0.90;
+            n1.vy *= 0.90;
+            n1.x += n1.vx;
+            n1.y += n1.vy;
+
+            n1.x = Math.max(n1.r + 5, Math.min(containerWidth - n1.r - 5, n1.x));
+            n1.y = Math.max(n1.r + 5, Math.min(containerHeight - n1.r - 5, n1.y));
+        }
+
+        ctx.lineWidth = 1;
+        links.forEach(link => {
+            ctx.beginPath();
+            ctx.moveTo(link.source.x, link.source.y);
+            ctx.lineTo(link.target.x, link.target.y);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
+            ctx.stroke();
+        });
+
+        nodes.forEach(node => {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+            ctx.fillStyle = node.color;
+            ctx.fill();
+
+            ctx.shadowColor = node.color;
+            ctx.shadowBlur = 4;
+            ctx.fillStyle = node.color;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = "rgba(255,255,255,0.7)";
+            ctx.font = node.fixed ? "bold 10px Inter" : "9px Inter";
+            ctx.textAlign = "center";
+            ctx.fillText(node.label, node.x, node.y - node.r - 4);
+        });
+
+        memoryGraphAnimationId = requestAnimationFrame(animate);
+    };
+
+    animate();
 }

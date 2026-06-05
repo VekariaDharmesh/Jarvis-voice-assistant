@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JARVIS | AI Operating System</title>
-    <link rel="stylesheet" href="./style.css?v=2.4.16">
+    <link rel="stylesheet" href="./style.css?v=2.4.20">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -30,58 +30,83 @@
         <!-- SIDEBAR (280px) - Collapsible Navigation & Control Panel -->
         <aside id="left-sidebar">
             <div class="sidebar-top-wrapper">
-                <!-- TOP BRAND SECTION -->
-                <div class="sidebar-brand-section">
-                    <div class="brand-top-row">
-                        <div class="brand-title">
-                            <span class="logo-dot"></span>
-                            <span class="logo-text">JARVIS</span>
-                        </div>
-                        <button id="toggle-sidebar" class="sidebar-action-btn" title="Toggle Sidebar">
-                            <i data-lucide="chevrons-left" size="16"></i>
-                        </button>
+
+
+                <!-- COLLAPSIBLE WORKSPACE SECTION -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-header">
+                        <span>Workspace</span>
+                        <i data-lucide="chevron-down" size="12" class="section-toggle-icon"></i>
                     </div>
-                    <div class="brand-status-meta">
-                        <span class="system-status"><span class="status-indicator-dot online"></span>System Online</span>
-                        <span class="agents-status-count"><i data-lucide="cpu" size="12"></i>3 Active Agents</span>
+                    <nav class="sidebar-nav">
+                        <a href="#" class="nav-item active" data-view="home">
+                            <i data-lucide="home" size="14"></i>
+                            <span>Home</span>
+                        </a>
+                        <a href="#" class="nav-item" data-view="projects">
+                            <i data-lucide="folder" size="14"></i>
+                            <span>Projects</span>
+                            <span class="nav-indicator">4</span>
+                        </a>
+                        <a href="#" class="nav-item" data-view="tasks">
+                            <i data-lucide="check-square" size="14"></i>
+                            <span>Tasks</span>
+                        </a>
+                        <a href="#" class="nav-item" data-view="notes">
+                            <i data-lucide="file-text" size="14"></i>
+                            <span>Notes</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- COLLAPSIBLE SYSTEM CORE SECTION -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-header">
+                        <span>AI & Settings</span>
+                        <i data-lucide="chevron-down" size="12" class="section-toggle-icon"></i>
+                    </div>
+                    <nav class="sidebar-nav">
+                        <a href="#" class="nav-item" data-view="agents">
+                            <i data-lucide="cpu" size="14"></i>
+                            <span>Agents</span>
+                        </a>
+                        <a href="#" class="nav-item" data-view="analytics">
+                            <i data-lucide="database" size="14"></i>
+                            <span>Memory</span>
+                        </a>
+                        <a href="#" class="nav-item" data-view="settings">
+                            <i data-lucide="settings" size="14"></i>
+                            <span>Settings</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- RECENT PROJECTS SECTION -->
+                <div class="sidebar-section recent-projects-section">
+                    <div class="sidebar-section-header">
+                        <span>Recent Projects</span>
+                    </div>
+                    <div class="recent-projects-list">
+                        <a href="#" class="recent-project-item active" data-project="ScholarWeb">
+                            <span class="project-dot active"></span>
+                            <span class="project-name">ScholarWeb</span>
+                        </a>
+                        <a href="#" class="recent-project-item" data-project="CloudSphere">
+                            <span class="project-dot"></span>
+                            <span class="project-name">CloudSphere</span>
+                        </a>
+                        <a href="#" class="recent-project-item" data-project="JarvisVoice">
+                            <span class="project-dot"></span>
+                            <span class="project-name">Jarvis Assistant</span>
+                        </a>
                     </div>
                 </div>
-                
-                <!-- NAVIGATION -->
-                <nav class="sidebar-nav">
-                    <a href="#" class="nav-item active" data-view="home">
-                        <i data-lucide="home" size="16"></i>
-                        <span>Home</span>
-                    </a>
-                    <a href="#" class="nav-item" data-view="projects">
-                        <i data-lucide="folder" size="16"></i>
-                        <span>Projects</span>
-                    </a>
-                    <a href="#" class="nav-item" data-view="tasks">
-                        <i data-lucide="check-square" size="16"></i>
-                        <span>Tasks</span>
-                    </a>
-                    <a href="#" class="nav-item" data-view="agents">
-                        <i data-lucide="cpu" size="16"></i>
-                        <span>Agents</span>
-                    </a>
-                    <a href="#" class="nav-item" data-view="analytics">
-                        <i data-lucide="database" size="16"></i>
-                        <span>Memory</span>
-                    </a>
-                    <a href="#" class="nav-item" data-view="notes">
-                        <i data-lucide="file-text" size="16"></i>
-                        <span>Notes</span>
-                    </a>
-                    <a href="#" class="nav-item" data-view="settings">
-                        <i data-lucide="settings" size="16"></i>
-                        <span>Settings</span>
-                    </a>
-                </nav>
 
                 <!-- TODAY'S FOCUS CHECKLIST IN SIDEBAR -->
                 <div class="sidebar-section focus-sidebar-section">
-                    <div class="section-label">Today's Focus</div>
+                    <div class="sidebar-section-header">
+                        <span>Today's Focus</span>
+                    </div>
                     <div class="focus-sidebar-card">
                         <div class="card-header-sidebar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                             <span class="focus-progress-badge" id="focus-progress-label" style="font-size:11px; color:var(--text-secondary);">0 / 4 Complete</span>
@@ -89,7 +114,7 @@
                         <div class="focus-progress-track" style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; margin-bottom:12px; overflow:hidden;">
                             <div class="focus-progress-fill" id="focus-progress-bar" style="width: 0%; height:100%; background:var(--accent-purple); transition:width var(--transition-speed) ease;"></div>
                         </div>
-                        <ul class="focus-checklist" id="sidebar-focus-list" style="margin-bottom:12px; max-height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; list-style:none; padding:0;">
+                        <ul class="focus-checklist" id="sidebar-focus-list" style="margin-bottom:12px; max-height:120px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; list-style:none; padding:0;">
                             <!-- Dynamic Focus Items -->
                         </ul>
                         <div class="focus-add-wrapper" style="display:flex; gap:6px;">
@@ -103,10 +128,13 @@
             <!-- USER PROFILE AT BOTTOM -->
             <div class="sidebar-profile-footer">
                 <div class="profile-details">
-                    <div class="avatar-box">D</div>
+                    <div class="avatar-wrapper">
+                        <div class="avatar-box">D</div>
+                        <span class="profile-status-dot online"></span>
+                    </div>
                     <div class="user-meta">
                         <span class="name">Dharmesh</span>
-                        <span class="role">Product Engineer</span>
+                        <span class="role">Staff Engineer</span>
                     </div>
                 </div>
                 <button class="quick-settings-trigger" title="System Settings" id="sidebar-settings-btn">
@@ -140,16 +168,19 @@
                 
                 <!-- ==================== VIEW: HOME ==================== -->
                 <section id="view-home" class="view-section active">
-                    <div class="home-layout-container">
-                        <!-- Left/Center Main Column: Command and Chat -->
-                        <div class="home-main-column">
-                            <!-- Premium Header -->
-                            <div class="welcome-header">
-                                <h1 id="greeting-text">Welcome, Dharmesh</h1>
-                                <p class="greeting-subtitle">Continue building <span class="active-project-tag">ScholarWeb</span></p>
-                            </div>
+                    <div class="welcome-header">
+                        <h1 id="greeting-text">Welcome, Dharmesh</h1>
+                        <p class="greeting-subtitle">Continue building <span class="active-project-tag">ScholarWeb</span></p>
+                    </div>
 
-                            <!-- Command Bar Workspace -->
+
+
+                    <!-- MAIN HOME COCKPIT GRID -->
+                    <div class="home-grid-layout">
+                        <!-- Left Main Column: Command Center & Projects -->
+                        <div class="home-left-column">
+                            
+                            <!-- Command Center -->
                             <div class="ai-command-center">
                                 <div class="command-container">
                                     <div class="command-bar-wrapper">
@@ -174,27 +205,29 @@
                                     </div>
                                 </div>
 
-                                <!-- Example Quick Prompts -->
                                 <div class="command-examples">
                                     <span class="example-tag" data-prompt="Generate a clean dashboard UI template using modern HTML and CSS flexbox.">Generate UI</span>
                                     <span class="example-tag" data-prompt="Analyze the following code block for optimization, vulnerabilities, and code quality issues:">Review Code</span>
                                     <span class="example-tag" data-prompt="Design an optimized relational schema with indexes for a multi-tenant database.">Create Database</span>
-                                    <span class="example-tag" data-prompt="Write a step-by-step production playbook for a React/FastAPI stack on Docker/Vercel.">Deploy Project</span>
+                                    <span class="example-tag" data-prompt="Write a step-by-step playbook for a React/FastAPI stack on Docker/Vercel.">Deploy Project</span>
                                 </div>
 
-                                <!-- Conversation Output -->
                                 <div class="chat-messages-box" id="chat-log">
                                     <div class="message jarvis-message">
                                         <div class="message-content">
-                                            <span style="color:var(--text-secondary); font-style:italic;">JARVIS is standing by. Ask a question, run a command, or trigger one of the clean SaaS action modules below.</span>
+                                            <span style="color:var(--text-secondary); font-style:italic;">JARVIS is standing by. Ask a question, run a command, or trigger one of the actions below.</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Clean Quick Actions Grid -->
+
+
+
+
+                            <!-- Clean Quick Prompt Templates -->
                             <div class="quick-actions-section">
-                                <h3 class="section-title">Quick Actions</h3>
+                                <h3 class="section-title">Quick Prompt Templates</h3>
                                 <div class="quick-actions-grid">
                                     <div class="action-card" data-prompt="Generate a clean dashboard UI template using HTML and vanilla CSS flexbox.">
                                         <div class="action-icon-box"><i data-lucide="layout" size="14"></i></div>
@@ -220,35 +253,13 @@
                                             <h4>Debug Error</h4>
                                         </div>
                                     </div>
-                                    <div class="action-card" data-prompt="Design an optimized relational database schema with performance indexing parameters for my project:">
-                                        <div class="action-icon-box"><i data-lucide="database" size="14"></i></div>
-                                        <div class="action-info">
-                                            <h4>Database Schema</h4>
-                                        </div>
-                                    </div>
-                                    <div class="action-card" data-prompt="Create a highly secure, optimized multi-stage production Dockerfile and Docker Compose configurations for:">
-                                        <div class="action-icon-box"><i data-lucide="layers" size="14"></i></div>
-                                        <div class="action-info">
-                                            <h4>Docker Setup</h4>
-                                        </div>
-                                    </div>
-                                    <div class="action-card" data-prompt="Write a clean Vercel serverless configurations, GitHub Actions production deployment pipeline, and config assets for:">
-                                        <div class="action-icon-box"><i data-lucide="rocket" size="14"></i></div>
-                                        <div class="action-info">
-                                            <h4>CI/CD Deploy</h4>
-                                        </div>
-                                    </div>
-                                    <div class="action-card" data-prompt="Generate a premium developer-focused markdown documentation README and API references detailing structural layout:">
-                                        <div class="action-icon-box"><i data-lucide="file-text" size="14"></i></div>
-                                        <div class="action-info">
-                                            <h4>Write Docs</h4>
-                                        </div>
-                                    </div>
+                                </div>
                             </div>
                         </div>
+
+
                     </div>
-                </div>
-            </section>
+                </section>
 
                 <!-- ==================== VIEW: PROJECTS ==================== -->
                 <section id="view-projects" class="view-section">
@@ -290,8 +301,13 @@
                             <button class="primary-btn" id="save-notes-btn">Save Note</button>
                         </div>
                     </div>
-                    <div class="notes-container">
-                        <textarea id="notes-textarea" placeholder="Start typing your notes in markdown format..." autocomplete="off"></textarea>
+                    <div class="notes-container split-pane">
+                        <div class="pane editor-pane">
+                            <textarea id="notes-textarea" placeholder="Start typing your notes in markdown format..." autocomplete="off"></textarea>
+                        </div>
+                        <div class="pane preview-pane">
+                            <div id="notes-preview" class="markdown-body"></div>
+                        </div>
                     </div>
                 </section>
 
@@ -299,8 +315,8 @@
                 <section id="view-tasks" class="view-section">
                     <div class="view-header">
                         <div class="view-title-group">
-                            <h2>Tasks</h2>
-                            <p>Review objectives, drag tasks across columns, or compile new requirements</p>
+                            <h2>Operations Board</h2>
+                            <p>Manage objectives, track active pipelines, or declare new tasks across the workforce</p>
                         </div>
                         <div class="task-board-controls">
                             <input type="text" id="new-task-input" placeholder="Initialize new operation objective..." autocomplete="off">
@@ -308,33 +324,40 @@
                         </div>
                     </div>
 
-                    <!-- Command Queue (Linear-style priority board) -->
+                    <!-- Command Queue (Linear-style 5-Column Kanban Board) -->
                     <div class="today-command-queue-section">
-                        <div class="command-queue-grid">
-                            <div class="queue-column" data-priority="critical">
-                                <div class="queue-column-header critical">
-                                    <span>CRITICAL PHASES</span>
-                                    <span class="badge" id="badge-queue-critical">0</span>
+                        <div class="command-queue-grid columns-5">
+                            <div class="queue-column" data-status="backlog">
+                                <div class="queue-column-header backlog">
+                                    <span>BACKLOG</span>
+                                    <span class="badge" id="badge-queue-backlog">0</span>
                                 </div>
-                                <div class="queue-cards-list" id="queue-critical"></div>
+                                <div class="queue-cards-list" id="queue-backlog"></div>
                             </div>
-                            <div class="queue-column" data-priority="important">
+                            <div class="queue-column" data-status="in_progress">
                                 <div class="queue-column-header important">
-                                    <span>IMPORTANT CHANNELS</span>
-                                    <span class="badge" id="badge-queue-important">0</span>
+                                    <span>IN PROGRESS</span>
+                                    <span class="badge" id="badge-queue-progress">0</span>
                                 </div>
-                                <div class="queue-cards-list" id="queue-important"></div>
+                                <div class="queue-cards-list" id="queue-progress"></div>
                             </div>
-                            <div class="queue-column" data-priority="scheduled">
+                            <div class="queue-column" data-status="review">
+                                <div class="queue-column-header critical">
+                                    <span>REVIEW</span>
+                                    <span class="badge" id="badge-queue-review">0</span>
+                                </div>
+                                <div class="queue-cards-list" id="queue-review"></div>
+                            </div>
+                            <div class="queue-column" data-status="blocked">
                                 <div class="queue-column-header scheduled">
-                                    <span>SCHEDULED CHECKS</span>
-                                    <span class="badge" id="badge-queue-scheduled">0</span>
+                                    <span>BLOCKED</span>
+                                    <span class="badge" id="badge-queue-blocked">0</span>
                                 </div>
-                                <div class="queue-cards-list" id="queue-scheduled"></div>
+                                <div class="queue-cards-list" id="queue-blocked"></div>
                             </div>
-                            <div class="queue-column" data-priority="completed">
+                            <div class="queue-column" data-status="completed">
                                 <div class="queue-column-header completed">
-                                    <span>COMPLETED LOGS</span>
+                                    <span>COMPLETED</span>
                                     <span class="badge" id="badge-queue-completed">0</span>
                                 </div>
                                 <div class="queue-cards-list" id="queue-completed"></div>
@@ -391,13 +414,29 @@
                         </div>
                     </div>
 
-                    <div class="glass-card" style="margin-top: 24px; padding: 24px;">
-                        <h3 style="margin-bottom: 12px; font-weight: 600; font-size: 15px;">System Diagnostics</h3>
-                        <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; line-height: 1.5;">Diagnostics logs verify that both speech-to-text engines, browser synthesizer pipelines, and FastAPI endpoints are in perfect synergy.</p>
-                        <div class="diagnostics-logs-box" id="diagnostics-logs">
-                            <div class="log-line"><span class="log-time">[11:05:01]</span> <span class="log-success">SYS</span>: Whisper voice recognition layer loaded cleanly in base execution thread.</div>
-                            <div class="log-line"><span class="log-time">[11:05:02]</span> <span class="log-success">SYS</span>: Browser SpeechSynthesis listener configured.</div>
-                            <div class="log-line"><span class="log-time">[11:05:03]</span> <span class="log-success">SYS</span>: FastAPI persistent JSON database server active.</div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 24px;">
+                        <div class="glass-card" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">Visual Memory Graph</h3>
+                                    <p style="color: var(--text-secondary); font-size: 12px;">Interactive neural map of persistent memory facts and system associations.</p>
+                                </div>
+                            </div>
+                            <div class="memory-graph-container" style="position: relative; width: 100%; height: 350px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden;">
+                                <canvas id="memory-nodes-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="glass-card" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h3 style="margin-bottom: 12px; font-weight: 600; font-size: 15px;">System Diagnostics</h3>
+                                <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 16px; line-height: 1.5;">Diagnostics logs verify that speech-to-text engines, synthesis pipelines, and database endpoints are fully operational.</p>
+                                <div class="diagnostics-logs-box" id="diagnostics-logs" style="max-height: 250px; overflow-y: auto;">
+                                    <div class="log-line" style="margin-bottom: 8px; font-size: 11px;"><span class="log-time" style="color: var(--text-muted); margin-right: 6px;">[11:05:01]</span> <span class="log-success" style="color: var(--accent-green); font-weight: 600;">SYS</span>: Whisper voice recognition active.</div>
+                                    <div class="log-line" style="margin-bottom: 8px; font-size: 11px;"><span class="log-time" style="color: var(--text-muted); margin-right: 6px;">[11:05:02]</span> <span class="log-success" style="color: var(--accent-green); font-weight: 600;">SYS</span>: Browser SpeechSynthesis ready.</div>
+                                    <div class="log-line" style="margin-bottom: 8px; font-size: 11px;"><span class="log-time" style="color: var(--text-muted); margin-right: 6px;">[11:05:03]</span> <span class="log-success" style="color: var(--accent-green); font-weight: 600;">SYS</span>: FastAPI persistent server online.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -513,7 +552,7 @@
         </div>
     </div>
 
-    <script src="./app.js?v=2.4.16"></script>
+    <script src="./app.js?v=2.4.20"></script>
     <script>
         lucide.createIcons();
     </script>
@@ -570,7 +609,15 @@
             
             function animate() {
                 // Generate soft, futuristic trailing trails by clearing with fractional opacity
-                ctx.fillStyle = 'rgba(10, 10, 10, 0.16)';
+                ctx.fillStyle = 'rgba(5, 5, 5, 0.15)';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Draw ambient radial gradient overlay
+                const grad = ctx.createRadialGradient(width / 2, 0, 0, width / 2, 0, Math.max(width, height) * 0.65);
+                grad.addColorStop(0, 'rgba(139, 92, 246, 0.05)');
+                grad.addColorStop(0.5, 'rgba(139, 92, 246, 0.01)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, width, height);
                 
                 // Calculate 3D Parallax offset relative to screen center
